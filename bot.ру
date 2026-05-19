@@ -1,0 +1,29 @@
+import os
+from telegram import Update, ReplyKeyboardMarkup
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
+
+TOKEN = os.environ.get("BOT_TOKEN")
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    keyboard = [["💼 Услуги", "📞 Контакты"], ["❓ О нас"]]
+    markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+    await update.message.reply_text(
+        "Привет! Я демо-бот 👋\nВыбери что тебя интересует:",
+        reply_markup=markup
+    )
+
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = update.message.text
+    if text == "💼 Услуги":
+        await update.message.reply_text("Мы делаем телеграм-ботов под заказ 🤖\nСтоимость от 5000 руб.")
+    elif text == "📞 Контакты":
+        await update.message.reply_text("Написать нам: @твой_ник")
+    elif text == "❓ О нас":
+        await update.message.reply_text("Мы автоматизируем бизнес через телеграм-ботов 🚀")
+    else:
+        await update.message.reply_text("Выбери пункт из меню 👇")
+
+app = ApplicationBuilder().token(TOKEN).build()
+app.add_handler(CommandHandler("start", start))
+app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+app.run_polling()
